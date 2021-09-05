@@ -25,10 +25,12 @@ const PAYPAL_ORDER_API = 'https://api-m.sandbox.paypal.com/v2/checkout/orders/';
 const PAYPAL_PURCHASE_API = 'https://api-m.sandbox.paypal.com/v2/payments/authorizations/';
 
 // 1c. Get an access token from the PayPal API
+
 let AuthToken = "";
-var data = qs.stringify({
+let data = qs.stringify({
     'grant_type': 'client_credentials'
 });
+
 var config = {
     method: 'post',
     url: PAYPAL_OAUTH_API,
@@ -38,9 +40,9 @@ var config = {
     },
     data: data
 };
-axios(config).then(function (resp) {
-    AuthToken = resp.data.access_token;;
-});
+
+var authToken = axios(config);
+
 
 //****** Callbacks for all URL requests
 app.get('/', function (req, res) {
@@ -72,59 +74,68 @@ app.post('/demo_paypal/createOder', function (req, res) {
     amount = parseInt(amount, 10);
     console.log("amount", amount);
     var data = JSON.stringify({ "intent": "CAPTURE", "purchase_units": [{ "amount": { "currency_code": "USD", "value": amount } }] });
-    var captureConfig = {
-        method: 'post',
-        url: PAYPAL_ORDER_API,
-        headers: {
-            'Authorization': 'Bearer ' + AuthToken.trim(),
-            'Content-Type': 'application/json'
-
-        },
-        data: data
-    };
     var authData = JSON.stringify({ "intent": "AUTHORIZE", "purchase_units": [{ "amount": { "currency_code": "USD", "value": amount } }] });
-    var authConfig = {
-        method: 'post',
-        url: PAYPAL_ORDER_API,
-        headers: {
-            'Authorization': 'Bearer ' + AuthToken.trim(),
-            'Content-Type': 'application/json'
 
-        },
-        data: authData
-    };
-    order = axios(captureConfig).then(function (resp) {
-        var orderId = resp.data.id
-        console.log("sucessfull created order ", orderId);
-        // res.status(200).send({ orderId:  });
-        authOrder = axios(authConfig).then(function (respData) {
-            console.log("Sending back create order", orderId);
-            res.status(200).send({ orderId: orderId });
+    authToken.then(function (response) {
+        oAuthTOken = response.data.access_token;
+        var captureConfig = {
+            method: 'post',
+            url: PAYPAL_ORDER_API,
+            headers: {
+                'Authorization': 'Bearer ' + oAuthTOken,
+                'Content-Type': 'application/json'
+            },
+            data: data
+        };
+        var authConfig = {
+            method: 'post',
+            url: PAYPAL_ORDER_API,
+            headers: {
+                'Authorization': 'Bearer ' + oAuthTOken,
+                'Content-Type': 'application/json'
+
+            },
+            data: authData
+        };
+        order = axios(captureConfig).then(function (resp) {
+            var orderId = resp.data.id
+            console.log("sucessfull created order ", orderId);
+            // res.status(200).send({ orderId:  });
+            authOrder = axios(authConfig).then(function (respData) {
+                console.log("Sending back create order", orderId);
+                res.status(200).send({ orderId: orderId });
+            }).catch(function (error) {
+                console.log("AuthError:", error);
+            });
         }).catch(function (error) {
-            console.log("AuthError:", error);
+            console.log("CreateOrderError:", error);
         });
-    }).catch(function (error) {
-        console.log("CreateOrderError:", error);
-    });
+    })
+
+
 
 });
 app.post('/demo_paypal/approveOrder', function (req, res) {
     orderID = req.body.orderID;
-    var authConfig = {
-        method: 'post',
-        url: PAYPAL_ORDER_API + orderID + '/capture',
-        headers: {
-            'Authorization': 'Bearer ' + AuthToken.trim(),
-            'Content-Type': 'application/json'
+    authToken.then(function (response) {
+        oAuthTOken = response.data.access_token;
+        var authConfig = {
+            method: 'post',
+            url: PAYPAL_ORDER_API + orderID + '/capture',
+            headers: {
+                'Authorization': 'Bearer ' + oAuthTOken,
+                'Content-Type': 'application/json'
 
-        }
-    };
-    orderAuth = axios(authConfig).then(function (resp) {
-        console.log("sucessfull Order AUth", resp.data.purchase_units[0].payments);
-        res.status(200).send({ oData: resp.data });
-    }).catch(function (error) {
-        console.log(error);
-    });
+            }
+        };
+        orderAuth = axios(authConfig).then(function (resp) {
+            console.log("sucessfull Order AUth", resp.data.purchase_units[0].payments);
+            res.status(200).send({ oData: resp.data });
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }).catch(function (error) { });
+
 });
 
 console.log("All code is fine. App Started Listerning to:", PORT);
