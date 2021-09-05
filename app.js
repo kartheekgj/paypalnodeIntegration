@@ -72,12 +72,11 @@ app.post('/demo_paypal/createOder', function (req, res) {
     amount = req.body.amount || 1;
     amount = parseInt(amount, 10);
     console.log("amount", amount);
-    var data = '{"intent":"CAPTURE","purchase_units":[{"amount":{"currency_code":"USD","value":' + amount + '}}]}';
-    var authData = '{"intent":"AUTHORIZE","purchase_units":[{"amount":{"currency_code":"USD","value":' + amount + '}}]}';
+    var data = qs.stringify({ "intent": "CAPTURE", "purchase_units": [{ "amount": { "currency_code": "USD", "value": amount } }] });
+    var authData = qs.stringify({ "intent": "AUTHORIZE", "purchase_units": [{ "amount": { "currency_code": "USD", "value": amount } }] });
 
     authToken.then(function (response) {
         oAuthTOken = response.data.access_token;
-        console.log("oathGenerated", oAuthTOken);
         var captureConfig = {
             method: 'post',
             url: PAYPAL_ORDER_API,
@@ -88,6 +87,7 @@ app.post('/demo_paypal/createOder', function (req, res) {
             },
             data: data
         };
+        console.log("captureConfig", captureConfig);
         var authConfig = {
             method: 'post',
             url: PAYPAL_ORDER_API,
@@ -95,6 +95,7 @@ app.post('/demo_paypal/createOder', function (req, res) {
                 "Authorization": "Bearer " + oAuthTOken,
                 "Content-Type": "application/json",
                 "Preferstring": "return=representation"
+
             },
             data: authData
         };
@@ -127,6 +128,9 @@ app.post('/demo_paypal/createOder', function (req, res) {
             console.log(error.config);
         });
     })
+
+
+
 });
 app.post('/demo_paypal/approveOrder', function (req, res) {
     orderID = req.body.orderID;
