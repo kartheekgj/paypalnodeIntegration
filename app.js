@@ -71,10 +71,8 @@ app.get('*', function (req, res) {
 app.post('/demo_paypal/createOder', function (req, res) {
     amount = req.body.amount || 1;
     amount = parseInt(amount, 10);
-    console.log("amount", amount);
-    var data = qs.stringify({ "intent": "CAPTURE", "purchase_units": [{ "amount": { "currency_code": "USD", "value": amount } }] });
-    var authData = qs.stringify({ "intent": "AUTHORIZE", "purchase_units": [{ "amount": { "currency_code": "USD", "value": amount } }] });
-
+    var data = JSON.stringify({ "intent": "CAPTURE", "purchase_units": [{ "amount": { "currency_code": "USD", "value": amount } }] });
+    var authData = JSON.stringify({ "intent": "AUTHORIZE", "purchase_units": [{ "amount": { "currency_code": "USD", "value": amount } }] });
     authToken.then(function (response) {
         oAuthTOken = response.data.access_token;
         var captureConfig = {
