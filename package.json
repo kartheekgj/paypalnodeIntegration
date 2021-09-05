@@ -10,7 +10,8 @@
   "author": "Jayendra Kartheek",
   "license": "MIT",
   "dependencies": {
-    "express": "latest"
+    "express": "latest",
+    "axios": "latest"
   },
   "devDependencies": {
     "axios": "^0.21.1",
