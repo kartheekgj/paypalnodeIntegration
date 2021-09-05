@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Ensures optimal rendering on mobile devices. -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" /> <!-- Optimal Internet Explorer compatibility -->
+</head>
+<style>
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: red;
+        color: white;
+        text-align: center;
+    }
+</style>
+
+<body>
+    <script
+        src="https://www.paypal.com/sdk/js?client-id=AWMW8DUMHT7PaJcIWB0FZBgv5TYWo1UV-Od7Q0vTMNnxVNw78R5qFH4Sc3rtwcEzBA5iEyX_qQpFGjIR">
+    </script>
+
+
+    <div id="paypal-button-container"></div>
+    <footer class="footer">Developed by JK</footer>
+
+</body>
+<script>
+    paypal.Buttons({
+        style: {
+            shape: 'rect',
+            color: 'blue',
+            layout: 'horizontal',
+            label: 'paypal',
+
+        },
+        createOrder: function (data, actions) {
+            return fetch('/demo_paypal/createOder', {
+                method: 'post',
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }).then(function (res) {
+                return res.json();
+            }).then(function (data) {
+                console.log("createOrder:", data);
+                return data["orderId"];
+            });
+        },
+        onApprove: function (data, actions) {
+            // 2. Make a request to your server
+            console.log("data:", data)
+            return fetch('/demo_paypal/approveOrder', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                    orderID: data.orderID,
+                    payerID: data.payerID
+                })
+            }).then(function (res) {
+                return res.json();
+            }).then(function (details) {
+                console.log("onApprove:", details);
+                //alert('Transaction approved by ' + details.payer_given_name);
+            });
+        },
+        onError: function (err) {
+            console.log(err);
+        }
+    }).render('#paypal-button-container');
+</script>
+
+</html>

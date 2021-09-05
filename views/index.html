@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="This page is created for Paypal for checkout demo - Server Side">
+    <meta name="author" content="Jayendra Kartheek">
+
+    <title>PayPal - CheckOut</title>
+    <!-- Bootstrap core CSS -->
+    <link href="./bootstrap.min.css" rel="stylesheet">
+    <link href="./sticky-footer-navbar.css" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" role="navigation">
+            <a class="navbar-brand" href="javascript:;"><img src="./logo.svg" width="250px" alt="PayPal"
+                    height="25px;" /></a>
+
+        </nav>
+    </header>
+    <script
+        src="https://www.paypal.com/sdk/js?client-id=AWMW8DUMHT7PaJcIWB0FZBgv5TYWo1UV-Od7Q0vTMNnxVNw78R5qFH4Sc3rtwcEzBA5iEyX_qQpFGjIR">
+    </script>
+
+    <!-- Begin page content -->
+    <main role="main" class="mt-4" id="mainContainer">
+        <section class="jumbotron text-center">
+            <p class="alert alert-info" id="errPaypal" style="display: none"></p>
+            <div class="container">
+                <h1 class="jumbotron-heading">Check out Page example</h1>
+                <p class="lead text-muted">This has been built using paypal server side checkout functionality.</p>
+                <form>
+                    <div class="form-group row">
+                        <label for="staticEmail" class="col-sm-6 col-form-label">Amount to Transfer(USD)</label>
+                        <div class="col-sm-2">
+                            <input type="number" class="form-control" id="amount" min="1" max="10" value="1">
+                        </div>
+                    </div>
+                </form>
+                <p>
+                    <div id="paypal-button-container"></div>
+                </p>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <div class="footer_container">
+            <span class="text-muted">Developed by Jayendra Kartheek</span>
+        </div>
+    </footer>
+    <script src="./jquery-3.4.1.min.js"></script>
+    <script src="./bootstrap.min.js"></script>
+    <script src="./btnMain.min.js"></script>
+</body>
+
+</html>
