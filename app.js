@@ -26,7 +26,6 @@ const PAYPAL_PURCHASE_API = 'https://api-m.sandbox.paypal.com/v2/payments/author
 
 // 1c. Get an access token from the PayPal API
 
-let AuthToken = "";
 let data = qs.stringify({
     'grant_type': 'client_credentials'
 });
@@ -73,17 +72,19 @@ app.post('/demo_paypal/createOder', function (req, res) {
     amount = req.body.amount || 1;
     amount = parseInt(amount, 10);
     console.log("amount", amount);
-    var data = JSON.stringify({ "intent": "CAPTURE", "purchase_units": [{ "amount": { "currency_code": "USD", "value": amount } }] });
-    var authData = JSON.stringify({ "intent": "AUTHORIZE", "purchase_units": [{ "amount": { "currency_code": "USD", "value": amount } }] });
+    var data = '{"intent":"CAPTURE","purchase_units":[{"amount":{"currency_code":"USD","value":' + amount + '}}]}';
+    var authData = '{"intent":"AUTHORIZE","purchase_units":[{"amount":{"currency_code":"USD","value":' + amount + '}}]}';
 
     authToken.then(function (response) {
         oAuthTOken = response.data.access_token;
+        console.log("oathGenerated", oAuthTOken);
         var captureConfig = {
             method: 'post',
             url: PAYPAL_ORDER_API,
             headers: {
-                'Authorization': 'Bearer ' + oAuthTOken,
-                'Content-Type': 'application/json'
+                "Authorization": "Bearer " + oAuthTOken,
+                "Content-Type": "application/json",
+                "Preferstring": "return=representation"
             },
             data: data
         };
@@ -91,9 +92,9 @@ app.post('/demo_paypal/createOder', function (req, res) {
             method: 'post',
             url: PAYPAL_ORDER_API,
             headers: {
-                'Authorization': 'Bearer ' + oAuthTOken,
-                'Content-Type': 'application/json'
-
+                "Authorization": "Bearer " + oAuthTOken,
+                "Content-Type": "application/json",
+                "Preferstring": "return=representation"
             },
             data: authData
         };
@@ -108,12 +109,24 @@ app.post('/demo_paypal/createOder', function (req, res) {
                 console.log("AuthError:", error);
             });
         }).catch(function (error) {
-            console.log("CreateOrderError:", error);
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else if (error.request) {
+                // The request was made but no response was received
+                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                // http.ClientRequest in node.js
+                console.log(error.request);
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+            }
+            console.log(error.config);
         });
     })
-
-
-
 });
 app.post('/demo_paypal/approveOrder', function (req, res) {
     orderID = req.body.orderID;
