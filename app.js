@@ -76,7 +76,7 @@ app.post('/demo_paypal/createOder', function (req, res) {
         method: 'post',
         url: PAYPAL_ORDER_API,
         headers: {
-            'Authorization': 'Bearer ' + AuthToken,
+            'Authorization': 'Bearer ' + AuthToken.trim(),
             'Content-Type': 'application/json'
 
         },
@@ -87,7 +87,7 @@ app.post('/demo_paypal/createOder', function (req, res) {
         method: 'post',
         url: PAYPAL_ORDER_API,
         headers: {
-            'Authorization': 'Bearer ' + AuthToken,
+            'Authorization': 'Bearer ' + AuthToken.trim(),
             'Content-Type': 'application/json'
 
         },
@@ -114,7 +114,7 @@ app.post('/demo_paypal/approveOrder', function (req, res) {
         method: 'post',
         url: PAYPAL_ORDER_API + orderID + '/capture',
         headers: {
-            'Authorization': 'Bearer ' + AuthToken,
+            'Authorization': 'Bearer ' + AuthToken.trim(),
             'Content-Type': 'application/json'
 
         }
