@@ -48,8 +48,8 @@ paypal.Buttons({
             let name = details.name;
             let status = details.status
             console.log("Approved:", oRespData, captureId, name, status);
-            let appendText = "<br />Order has been approved: <b>";
-            appendText += "</b> by <b> " + name + "</b>. Reference Id: <b>" + captureId + "</b>";
+            let appendText = "<br />Order has been approved by ";
+            appendText += "<b>" + name + "</b>. Reference Id: <b>" + captureId + "</b>";
             $("#errPaypal").append(appendText).show();
         });
     },
