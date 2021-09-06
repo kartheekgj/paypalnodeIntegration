@@ -12,10 +12,11 @@
   "dependencies": {
     "axios": "latest",
     "express": "latest",
-    "node-fetch": "^3.0.0"
+    "node-fetch": "latest"
   },
   "devDependencies": {
     "axios": "^0.21.1",
-    "crypto": "^1.0.1"
+    "crypto": "^1.0.1",
+    "node-fetch": "^3.0.0"
   }
 }
