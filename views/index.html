@@ -28,15 +28,19 @@
     <!-- Begin page content -->
     <main role="main" class="mt-4" id="mainContainer">
         <section class="jumbotron text-center">
-            <p class="alert alert-info" id="errPaypal" style="display: none"></p>
+            <p class="alert alert-info" id="errPaypal" style="display: none;"></p>
             <div class="container">
                 <h1 class="jumbotron-heading">Check out Page example</h1>
                 <p class="lead text-muted">This has been built using paypal server side checkout functionality.</p>
+                <hr />
+                <h3>Transfer the amount using paypal</h3>
                 <form>
                     <div class="form-group row">
-                        <label for="staticEmail" class="col-sm-6 col-form-label">Amount to Transfer(USD)</label>
+                        <label for="staticEmail" class="col-sm-6 col-form-label" style="text-align: end;">Amount to
+                            Transfer(USD)</label>
                         <div class="col-sm-2">
-                            <input type="number" class="form-control" id="amount" min="1" max="10" value="1">
+                            <input type="number" class="form-control" style="width:fit-content" id="amount" min="1"
+                                max="10" value="1">
                         </div>
                     </div>
                 </form>
