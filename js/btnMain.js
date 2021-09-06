@@ -56,6 +56,11 @@ paypal.Buttons({
         });
     },
     onError: function (err) {
-        console.log(err);
+        $("#errPaypal").html("Something is not right here! Please try again later.").show();
+        console.log("Tranasction error", err);
+    },
+    onCancel: function (data, actions) {
+        $("#errPaypal").html("Transaction has been canceled").show();
+        console.log("Transaction canceled", data);
     }
 }).render('#paypal-button-container');

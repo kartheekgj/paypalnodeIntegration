@@ -10,13 +10,11 @@
   "author": "Jayendra Kartheek",
   "license": "MIT",
   "dependencies": {
-    "axios": "latest",
     "express": "latest",
-    "node-fetch": "latest"
+    "axios": "latest"
   },
   "devDependencies": {
     "axios": "^0.21.1",
-    "crypto": "^1.0.1",
-    "node-fetch": "^3.0.0"
+    "crypto": "^1.0.1"
   }
 }

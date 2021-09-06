@@ -1,6 +1,5 @@
 const http = require('http');
 var axios = require('axios');
-var nodeFetch = require('node-fetch');
 var qs = require('qs');
 const https = require('https');
 const express = require('express');
@@ -21,28 +20,9 @@ const PAYPAL_CLIENT = 'AWMW8DUMHT7PaJcIWB0FZBgv5TYWo1UV-Od7Q0vTMNnxVNw78R5qFH4Sc
 const PAYPAL_SECRET = 'EIelm-Nd88TAqHnHvVPw_E_ZnBPw6XTILxVgY1h2vbqdafxgPmEKy53Gx5FTE5wiI3hdpw4PUjLCYAYh';
 
 // 1b. Point your server to the PayPal APIs
-const PAYPAL_OAUTH_API = 'https://api-m.sandbox.paypal.com/v1/oauth2/token/';
+//const PAYPAL_OAUTH_API = 'https://api-m.sandbox.paypal.com/v1/oauth2/token/';
 const PAYPAL_ORDER_API = 'https://api-m.sandbox.paypal.com/v2/checkout/orders/';
 const PAYPAL_PURCHASE_API = 'https://api-m.sandbox.paypal.com/v2/payments/authorizations/';
-
-// 1c. Get an access token from the PayPal API
-
-let data = qs.stringify({
-    'grant_type': 'client_credentials'
-});
-
-var config = {
-    method: 'post',
-    url: PAYPAL_OAUTH_API,
-    headers: {
-        'Authorization': 'Basic QVdNVzhEVU1IVDdQYUpjSVdCMEZaQmd2NVRZV28xVVYtT2Q3UTB2VE1ObnhWTnc3OFI1cUZINFNjM3J0d2NFekJBNWlFeVhfcVFwRkdqSVI6RUllbG0tTmQ4OFRBcUhuSHZWUHdfRV9abkJQdzZYVElMeFZnWTFoMnZicWRhZnhnUG1FS3k1M0d4NUZURTV3aUkzaGRwdzRQVWpMQ1lBWWg=',
-        'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    data: data
-};
-
-var authToken = axios(config);
-
 
 //****** Callbacks for all URL requests
 app.get('/', function (req, res) {
@@ -72,136 +52,109 @@ app.get('*', function (req, res) {
 app.post('/demo_paypal/createOder', function (req, res) {
     amount = req.body.amount || 1;
     amount = parseInt(amount, 10);
-    var data = JSON.stringify({
+    var data = {
         "intent": "CAPTURE",
         "purchase_units": [
             {
                 "amount": {
                     "currency_code": "USD",
-                    "value": amount
+                    "value": 1
                 }
             }
         ]
-    });
-    var authData = JSON.stringify({
+    };
+    var authData = {
         "intent": "AUTHORIZE",
         "purchase_units": [
             {
                 "amount": {
                     "currency_code": "USD",
-                    "value": amount
+                    "value": 1
                 }
             }
         ]
-    });
-    authToken.then(function (response) {
-        oAuthTOken = response.data.access_token;
-        var captureConfig = {
-            method: 'post',
-            url: PAYPAL_ORDER_API,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            responseType: 'json',
-            auth: {
-                username: PAYPAL_CLIENT,
-                password: PAYPAL_SECRET
-            },
-            data: {
-                "intent": "CAPTURE",
-                "purchase_units": [
-                    {
-                        "amount": {
-                            "currency_code": "USD",
-                            "value": amount
-                        }
-                    }
-                ]
-            }
-        };
-        console.log("captureConfig", captureConfig);
-        var authConfig = {
-            method: 'post',
-            url: PAYPAL_ORDER_API,
-            headers: {
-                "Authorization": "Bearer " + oAuthTOken,
-                "Content-Type": "application/json",
-                "Preferstring": "return=representation"
-
-            },
-            data: authData
-        };
-        order = axios.post(PAYPAL_ORDER_API, {
-            "intent": "CAPTURE",
-            "purchase_units": [
-                {
-                    "amount": {
-                        "currency_code": "USD",
-                        "value": amount
-                    }
-                }
-            ]
-        }, {
-            auth: {
-                username: PAYPAL_CLIENT,
-                password: PAYPAL_SECRET
-            }, headers: {
-                "Content-Type": "application/json",
-            }
-        }).then(function (resp) {
-            var orderId = resp.data.id
-            console.log("sucessfull created order ", orderId);
+    };
+    let order;
+    var captureConfig = {
+        method: 'post',
+        url: PAYPAL_ORDER_API,
+        headers: {
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        },
+        auth: {
+            username: PAYPAL_CLIENT,
+            password: PAYPAL_SECRET
+        },
+        data: data
+    };
+    var authConfig = {
+        method: 'post',
+        url: PAYPAL_ORDER_API,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        auth: {
+            username: PAYPAL_CLIENT,
+            password: PAYPAL_SECRET
+        },
+        data: authData
+    };
+    order = axios(captureConfig);
+    order.then(function (resp) {
+        let orderId = resp.data.id
+        console.log("sucessfull created order ", orderId);
+        authOrder = axios(authConfig).then(function (respData) {
+            console.log("Sending back create order", orderId);
             res.status(200).send({ orderId: orderId });
-            // authOrder = axios(authConfig).then(function (respData) {
-            //     console.log("Sending back create order", orderId);
-            //     res.status(200).send({ orderId: orderId });
-            // }).catch(function (error) {
-            //     console.log("AuthError:", error);
-            // });
         }).catch(function (error) {
             if (error.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                // Request made and server responded
+                console.log('Auth Error', error.response.data);
+                console.log('Auth Error', error.response.status);
+                console.log('Auth Error', error.response.headers);
             } else if (error.request) {
                 // The request was made but no response was received
-                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                // http.ClientRequest in node.js
-                console.log(error.request);
+                console.log('Auth Error', error.request);
             } else {
                 // Something happened in setting up the request that triggered an Error
-                console.log('Error', error.message);
+                console.log('Auth Error', error.message);
             }
-            console.log(error.config);
+
         });
-    })
+    }).catch(function (err) {
+        if (error.response) {
+            // Request made and server responded
+            console.log('Capture Error', error.response.data);
+            console.log('Capture Error', error.response.status);
+            console.log('Capture Error', error.response.headers);
+        } else if (error.request) {
+            // The request was made but no response was received
+            console.log('Capture Error', error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Capture Error', error.message);
+        }
 
-
-
+    });
 });
 app.post('/demo_paypal/approveOrder', function (req, res) {
     orderID = req.body.orderID;
-    authToken.then(function (response) {
-        oAuthTOken = response.data.access_token;
-        var authConfig = {
-            method: 'post',
-            url: PAYPAL_ORDER_API + orderID + '/capture',
-            headers: {
-                'Authorization': 'Bearer ' + oAuthTOken,
-                'Content-Type': 'application/json'
+    var authConfig = {
+        method: 'post',
+        url: PAYPAL_ORDER_API + orderID + '/capture',
+        headers: {
+            'Authorization': 'Bearer ' + AuthToken,
+            'Content-Type': 'application/json'
 
-            }
-        };
-        orderAuth = axios(authConfig).then(function (resp) {
-            console.log("sucessfull Order AUth", resp.data.purchase_units[0].payments);
-            res.status(200).send({ oData: resp.data });
-        }).catch(function (error) {
-            console.log(error);
-        });
-    }).catch(function (error) { });
-
+        }
+    };
+    orderAuth = axios(authConfig).then(function (resp) {
+        console.log("sucessfull Order AUth", resp.data.purchase_units[0].payments);
+        res.status(200).send({ oData: resp.data });
+    }).catch(function (error) {
+        console.log(error);
+    });
 });
 
 console.log("All code is fine. App Started Listerning to:", PORT);
