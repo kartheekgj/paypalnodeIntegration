@@ -125,17 +125,16 @@ app.post('/demo_paypal/createOder', function (req, res) {
     }).catch(function (err) {
         if (error.response) {
             // Request made and server responded
-            console.log('Capture Error', error.response.data);
-            console.log('Capture Error', error.response.status);
-            console.log('Capture Error', error.response.headers);
+            console.log('create Error', error.response.data);
+            console.log('create Error', error.response.status);
+            console.log('create Error', error.response.headers);
         } else if (error.request) {
             // The request was made but no response was received
-            console.log('Capture Error', error.request);
+            console.log('create Error', error.request);
         } else {
             // Something happened in setting up the request that triggered an Error
-            console.log('Capture Error', error.message);
+            console.log('create Error', error.message);
         }
-
     });
 });
 app.post('/demo_paypal/approveOrder', function (req, res) {
@@ -144,16 +143,29 @@ app.post('/demo_paypal/approveOrder', function (req, res) {
         method: 'post',
         url: PAYPAL_ORDER_API + orderID + '/capture',
         headers: {
-            'Authorization': 'Bearer ' + AuthToken,
             'Content-Type': 'application/json'
-
+        },
+        auth: {
+            username: PAYPAL_CLIENT,
+            password: PAYPAL_SECRET
         }
     };
     orderAuth = axios(authConfig).then(function (resp) {
         console.log("sucessfull Order AUth", resp.data.purchase_units[0].payments);
         res.status(200).send({ oData: resp.data });
     }).catch(function (error) {
-        console.log(error);
+        if (error.response) {
+            // Request made and server responded
+            console.log('Approve Error', error.response.data);
+            console.log('Approve Error', error.response.status);
+            console.log('Approve Error', error.response.headers);
+        } else if (error.request) {
+            // The request was made but no response was received
+            console.log('Approve Error', error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Approve Error', error.message);
+        }
     });
 });
 
