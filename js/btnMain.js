@@ -43,11 +43,11 @@ paypal.Buttons({
         }).then(function (res) {
             return res.json();
         }).then(function (details) {
-            let details = details.oData;
+            let oRespData = details.oData;
             let captureId = details.captureId;
             let name = details.name;
             let status = details.status
-            console.log("Approved:", details, captureId, name, status);
+            console.log("Approved:", oRespData, captureId, name, status);
             let appendText = "<br />Order has been approved: <b>";
             appendText += "</b> by <b> " + name + "</b>";
             $("#errPaypal").append(appendText).show();
