@@ -58,7 +58,7 @@ app.post('/demo_paypal/createOder', function (req, res) {
             {
                 "amount": {
                     "currency_code": "USD",
-                    "value": 1
+                    "value": amount
                 }
             }
         ]
@@ -69,7 +69,7 @@ app.post('/demo_paypal/createOder', function (req, res) {
             {
                 "amount": {
                     "currency_code": "USD",
-                    "value": 1
+                    "value": amount
                 }
             }
         ]
@@ -151,8 +151,10 @@ app.post('/demo_paypal/approveOrder', function (req, res) {
         }
     };
     orderAuth = axios(authConfig).then(function (resp) {
+        let captures = resp.data.purchase_units[0].payments.captures[0];
+        let payerName = resp.data.payer.name.given_name;
         console.log("sucessfull Order AUth", resp.data.purchase_units[0].payments);
-        res.status(200).send({ oData: resp.data });
+        res.status(200).send({ captureId: captures.id, status: captures.status, oData: captures, name: payerName });
     }).catch(function (error) {
         if (error.response) {
             // Request made and server responded

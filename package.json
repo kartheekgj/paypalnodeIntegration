@@ -4,7 +4,6 @@
   "description": "This applications is to create a server side implementation of paypal smart button",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
   "author": "Jayendra Kartheek",
@@ -14,7 +13,7 @@
     "axios": "latest"
   },
   "devDependencies": {
-    "axios": "^0.21.1",
-    "crypto": "^1.0.1"
+    "express": "latest",
+    "axios": "latest"
   }
 }

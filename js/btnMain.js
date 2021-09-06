@@ -9,7 +9,7 @@ paypal.Buttons({
     },
     createOrder: function (data, actions) {
         $("#errPaypal").text("").hide();
-        var amount = $("#amount").val() || 1;
+        let amount = $("#amount").val() || 1;
         amount = parseInt(amount, 10);;
         console.log(amount);
         return fetch('/demo_paypal/createOder', {
@@ -43,15 +43,13 @@ paypal.Buttons({
         }).then(function (res) {
             return res.json();
         }).then(function (details) {
-            console.log("onApprove:", details);
-            var details = details.oData;
-            var approvalId = details.purchase_units[0].payments.captures[0].id;
-            debugger;
-            console.log("approvalId:", details.purchase_units[0].payments.captures);
-            var payerName = details.payer.name.given_name;
-            var appendText = "<br />Order has been approved: <b>";
-            appendText += details["approvalId"] + "</b> by <b>";
-            appendText += payerName + "</b>";
+            let details = details.oData;
+            let captureId = details.captureId;
+            let name = details.name;
+            let status = details.status
+            console.log("Approved:", details, captureId, name, status);
+            let appendText = "<br />Order has been approved: <b>";
+            appendText += "</b> by <b> " + name + "</b>";
             $("#errPaypal").append(appendText).show();
         });
     },
