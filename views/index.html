@@ -15,10 +15,10 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" role="navigation">
-            <a class="navbar-brand" href="javascript:;"><img src="./logo.svg" width="250px" alt="PayPal"
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" style="height:50px" role="navigation">
+            <a class="nav navbar-nav navbar-left" href="javascript:;"><img src="./logo.svg" width="250px" alt="PayPal"
                     height="25px;" /></a>
-
+            <h5 class="nav navbar-nav navbar-center">PayPal Checkout Demo - Server Side</h5>
         </nav>
     </header>
     <script
@@ -28,16 +28,13 @@
     <!-- Begin page content -->
     <main role="main" class="mt-4" id="mainContainer">
         <section class="jumbotron text-center">
-            <p class="alert alert-info" id="errPaypal" style="display: none;"></p>
+            <h4 class="alert alert-warning" id="errPaypal" style="display: none;"></h4>
             <div class="container">
-                <h1 class="jumbotron-heading">Check out Page example</h1>
-                <p class="lead text-muted">This has been built using paypal server side checkout functionality.</p>
-                <hr />
-                <h3>Transfer the amount using paypal</h3>
+                <h4>Transfer the amount using paypal</h4>
                 <form>
                     <div class="form-group row">
                         <label for="staticEmail" class="col-sm-6 col-form-label" style="text-align: end;">Amount to
-                            Transfer(USD)</label>
+                            Transfer in USD</label>
                         <div class="col-sm-2">
                             <input type="number" class="form-control" style="width:fit-content" id="amount" min="1"
                                 max="10" value="1">
@@ -57,7 +54,7 @@
     </footer>
     <script src="./jquery-3.4.1.min.js"></script>
     <script src="./bootstrap.min.js"></script>
-    <script src="./btnMain.js"></script>
+    <script src="./btnMain.min.js"></script>
 </body>
 
 </html>

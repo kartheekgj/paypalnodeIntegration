@@ -24,7 +24,7 @@ paypal.Buttons({
             return res.json();
         }).then(function (data) {
             console.log("createOrder:", data);
-            $("#errPaypal").html("Order has been created: <b>" + data.orderId + "</b>")
+            $("#errPaypal").html("Order has been initiated: <b>" + data.orderId + "</b>")
                 .show();
             return data["orderId"];
         });
@@ -49,16 +49,16 @@ paypal.Buttons({
             let status = details.status
             console.log("Approved:", oRespData, captureId, name, status);
             let appendText = "<br />Order has been approved: <b>";
-            appendText += "</b> by <b> " + name + "</b>. Reference Id: " + captureId;
+            appendText += "</b> by <b> " + name + "</b>. Reference Id: <b>" + captureId + "</b>";
             $("#errPaypal").append(appendText).show();
         });
     },
     onError: function (err) {
-        $("#errPaypal").html("Something is not right here! Please try again later.").show();
+        $("#errPaypal").append("</br>Something is not right here! Please try again later.").show();
         console.log("Tranasction error", err);
     },
     onCancel: function (data, actions) {
-        $("#errPaypal").html("Transaction has been canceled").show();
+        $("#errPaypal").append("</br>Transaction has been canceled").show();
         console.log("Transaction canceled", data);
     }
 }).render('#paypal-button-container');
