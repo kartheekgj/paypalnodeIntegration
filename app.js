@@ -1,5 +1,6 @@
 const http = require('http');
 var axios = require('axios');
+var nodeFetch = require('node-fetch');
 var qs = require('qs');
 const https = require('https');
 const express = require('express');
@@ -99,11 +100,24 @@ app.post('/demo_paypal/createOder', function (req, res) {
             method: 'post',
             url: PAYPAL_ORDER_API,
             headers: {
-                "Authorization": "Bearer " + oAuthTOken,
                 "Content-Type": "application/json",
-                "Preferstring": "return=representation"
             },
-            data: data
+            responseType: 'json',
+            auth: {
+                username: PAYPAL_CLIENT,
+                password: PAYPAL_SECRET
+            },
+            data: {
+                "intent": "CAPTURE",
+                "purchase_units": [
+                    {
+                        "amount": {
+                            "currency_code": "USD",
+                            "value": amount
+                        }
+                    }
+                ]
+            }
         };
         console.log("captureConfig", captureConfig);
         var authConfig = {
@@ -117,16 +131,33 @@ app.post('/demo_paypal/createOder', function (req, res) {
             },
             data: authData
         };
-        order = axios(captureConfig).then(function (resp) {
+        order = axios.post(PAYPAL_ORDER_API, {
+            "intent": "CAPTURE",
+            "purchase_units": [
+                {
+                    "amount": {
+                        "currency_code": "USD",
+                        "value": amount
+                    }
+                }
+            ]
+        }, {
+            auth: {
+                username: PAYPAL_CLIENT,
+                password: PAYPAL_SECRET
+            }, headers: {
+                "Content-Type": "application/json",
+            }
+        }).then(function (resp) {
             var orderId = resp.data.id
             console.log("sucessfull created order ", orderId);
-            // res.status(200).send({ orderId:  });
-            authOrder = axios(authConfig).then(function (respData) {
-                console.log("Sending back create order", orderId);
-                res.status(200).send({ orderId: orderId });
-            }).catch(function (error) {
-                console.log("AuthError:", error);
-            });
+            res.status(200).send({ orderId: orderId });
+            // authOrder = axios(authConfig).then(function (respData) {
+            //     console.log("Sending back create order", orderId);
+            //     res.status(200).send({ orderId: orderId });
+            // }).catch(function (error) {
+            //     console.log("AuthError:", error);
+            // });
         }).catch(function (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
