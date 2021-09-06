@@ -9,11 +9,7 @@
   "author": "Jayendra Kartheek",
   "license": "MIT",
   "dependencies": {
-    "express": "latest",
-    "axios": "latest"
-  },
-  "devDependencies": {
-    "express": "latest",
-    "axios": "latest"
+    "express": "*",
+    "axios": "*"
   }
 }
